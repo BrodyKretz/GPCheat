@@ -6,19 +6,30 @@ openai.api_key = "your_openai_api_key"
 
 # Function to query GPT and get the answer using the latest OpenAI API
 def get_answer_from_gpt(question_text):
-    prompt = f"Here is a multiple choice question: {question_text}. What is the correct answer? (A, B, C, or D)"
+    # Here, we provide a multiple-choice question and ask GPT to choose A, B, C, or D
+    prompt = f"""
+    Here is a multiple-choice question:
+    {question_text}
+    
+    Please choose the correct answer by selecting one of the following: A, B, C, or D. Provide only the letter of the answer.
+    """
     
     response = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
         messages=[
-            {"role": "system", "content": "You are a helpful assistant that answers multiple choice questions."},
+            {"role": "system", "content": "You are a helpful assistant that answers multiple-choice questions."},
             {"role": "user", "content": prompt}
         ]
     )
     
+    # Extract the answer as a letter (A, B, C, or D)
     answer = response['choices'][0]['message']['content'].strip().upper()
     
-    return answer
+    # Ensure the answer is valid (A, B, C, or D)
+    if answer in ["A", "B", "C", "D"]:
+        return answer
+    else:
+        return None
 
 # Function to simulate buzzing based on answer (A = 1 buzz, B = 2 buzzes, etc.)
 def buzz_based_on_answer(answer):
@@ -47,7 +58,11 @@ def main():
             print("Processing the question...")
             
             answer = get_answer_from_gpt(question_text)
-            buzz_based_on_answer(answer)
+            
+            if answer:
+                buzz_based_on_answer(answer)
+            else:
+                print("GPT could not determine a valid answer (A, B, C, or D). Please try again.")
             
     except KeyboardInterrupt:
         print("Program interrupted.")
