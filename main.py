@@ -4,17 +4,19 @@ import time
 # Setup OpenAI API Key
 openai.api_key = "your_openai_api_key"
 
-# Function to query GPT and get the answer
+# Function to query GPT and get the answer using the latest OpenAI API
 def get_answer_from_gpt(question_text):
     prompt = f"Here is a multiple choice question: {question_text}. What is the correct answer? (A, B, C, or D)"
     
-    response = openai.Completion.create(
-        engine="text-davinci-003",
-        prompt=prompt,
-        max_tokens=10
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": "You are a helpful assistant that answers multiple choice questions."},
+            {"role": "user", "content": prompt}
+        ]
     )
     
-    answer = response.choices[0].text.strip().upper()
+    answer = response['choices'][0]['message']['content'].strip().upper()
     
     return answer
 
